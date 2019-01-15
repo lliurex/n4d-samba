@@ -1,0 +1,38 @@
+####################################################smbldap-tools######################### No hace falta
+##############################################auth-client-config ####################### Configura el cliente
+############################################ldap-auth-client ################################## Metapaquete
+ldap-auth-config
+############################################libnss-ldap#################################### Incluido en el metapaquete ldap-auth-client
+figlet
+python-ldap ### n4d-samba , n4d-ldap
+ldap-utils ### n4d-ldap
+slapd  ### n4d-ldap
+##########################################3libpam-ldap#######################################33 Incluido en el metapaquete ldap-auth-client
+
+libnet-ldap-perl
+libdata-dump-perl
+
+
+samba    ### n4d-samba
+samba-doc ### n4d-samba
+
+
+
+
+
+
+
+#####################################33 Nada de esto hace falta############################
+
+
+
+
+configurador de perl y samba
+
+backup old configuration files:
+  /etc/smbldap-tools/smbldap.conf->/etc/smbldap-tools/smbldap.conf.old
+  /etc/smbldap-tools/smbldap_bind.conf->/etc/smbldap-tools/smbldap_bind.conf.old
+writing new configuration file:
+  /etc/smbldap-tools/smbldap.conf done.
+  /etc/smbldap-tools/smbldap_bind.conf done.
+

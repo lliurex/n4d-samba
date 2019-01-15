@@ -1,0 +1,47 @@
+{
+	"ou=Students,ou=People,{{ LDAP_BASE_DN }}":
+		{
+		"objectClass":["organizationalUnit","x-lliurex-ou-properties"],
+		"ou":"Students",
+		"x-lliurex-xid-counter":"20000"
+		},
+	"ou=Teachers,ou=People,{{ LDAP_BASE_DN }}":
+		{
+		"objectClass":["organizationalUnit","x-lliurex-ou-properties"],
+		"ou":"Teachers",
+		"x-lliurex-xid-counter":"5000"
+		},
+	"ou=Others,ou=People,{{ LDAP_BASE_DN }}":
+		{
+		"objectClass":["organizationalUnit","x-lliurex-ou-properties"],
+		"ou":"Others",
+		"x-lliurex-xid-counter":"50000"
+		},
+	"cn=teachers,ou=Profiles,ou=Groups,{{ LDAP_BASE_DN }}":
+		{
+		"objectClass":["top","posixGroup","sambaGroupMapping","x-lliurex-group-acl"],
+		"cn" : "teachers",
+		"description": "All teachers in the institution",
+		"gidNumber": "10003",
+		"sambaGroupType":"2",
+		"sambaSID":"{{ SAMBASID }}-10003"
+		},
+	"cn=students,ou=Profiles,ou=Groups,{{ LDAP_BASE_DN }}":
+		{
+		"objectClass":["top","posixGroup","sambaGroupMapping","x-lliurex-group-acl"],
+		"cn" : "students",
+		"description": "All students/pupils in the institution",
+		"gidNumber": "10004",
+		"sambaGroupType":"2",
+		"sambaSID":"{{ SAMBASID }}-10004"
+		},     
+	"cn=others,ou=Profiles,ou=Groups,{{ LDAP_BASE_DN }}":
+		{
+		"objectClass":["top","posixGroup","sambaGroupMapping","x-lliurex-group-acl"],
+		"cn" : "others",
+		"description": "Other persons in the institution",
+		"gidNumber": "10005",
+		"sambaGroupType":"2",
+		"sambaSID":"{{ SAMBASID }}-10005"
+		}
+}

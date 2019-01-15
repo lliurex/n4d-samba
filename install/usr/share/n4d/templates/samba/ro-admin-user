@@ -1,0 +1,9 @@
+{
+	"cn=roadmin,{{ LDAP_BASE_DN }}":
+	{
+		"objectClass"  : ["person"], 
+		"userPassword" : "{{ PASSWORD }}",
+		"cn" : "Read only admin",
+		"sn" : "Read only admin"
+	}
+}

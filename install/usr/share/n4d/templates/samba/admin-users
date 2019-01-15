@@ -1,0 +1,15 @@
+{
+	"uid={{ USERNAME }},ou=Admins,ou=People,{{ LDAP_BASE_DN }}":
+	{
+		"objectClass" : [ "posixAccount","shadowAccount","person","top","sambaSamAccount"],
+		"cn" : "{{ USERNAME }}",
+		"sn" : "{{ USERNAME }}",
+		"uid" : "{{ USERNAME }}",
+		"uidNumber" : "{{ USERNAME_UID }}",
+		"gidNumber" : "10001",
+		"homeDirectory" : "{{ USERHOME }}",
+		"loginShell" : "/bin/bash",
+		"userPassword" : "{{ USERPASSWORD }}",
+		"sambaSID" : "{{ SAMBASIDUSER  }}"
+	}
+}

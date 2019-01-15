@@ -1,0 +1,19 @@
+{
+	"uid=netadmin,ou=Admins,ou=People,{{ LDAP_BASE_DN }}":
+	{
+		"objectClass" : [ "posixAccount","shadowAccount","person","top","sambaSamAccount"],
+		"cn" : "netadmin",
+		"sn" : "netadmin",
+		"uid" : "netadmin",
+		"uidNumber" : "1042",
+		"gidNumber" : "10001",
+		"homeDirectory" : "/home/netadmin",
+		"loginShell" : "/bin/bash",
+		"userPassword" : "{{ USERPASSWORD }}",
+		"sambaNTPassword" : "{{ NTPASSWORD }}",
+		"sambaLMPassword" : "{{ LMPASSWORD }}",
+		"sambaPwdLastSet" : "{{ LASTSET }}",
+		"sambaAcctFlags" : "[U]",
+		"sambaSID" : "{{ SAMBASID }}-1042"
+	}
+}

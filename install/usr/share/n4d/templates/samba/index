@@ -1,0 +1,12 @@
+["uidNumber eq",
+"gidNumber eq",
+"loginShell eq",
+"uid eq,pres,sub",
+"memberUid eq,pres,sub",
+"uniqueMember eq,pres",
+"sambaSID eq",
+"sambaPrimaryGroupSID eq",
+"sambaGroupType eq",
+"sambaSIDList eq",
+"sambaDomainName eq",
+"default sub"]

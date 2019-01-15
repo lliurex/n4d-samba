@@ -1,0 +1,42 @@
+{
+    "NAME_SERVER_SAMBA": {
+        "function": "lliurex.variables.name_server_samba.init", 
+        "packages": [
+            "n4d-samba"
+        ], 
+        "description": "Domain name for samba", 
+        "value": null
+    }, 
+    "SAMBASID": {
+        "function": "lliurex.variables.sambasid.init", 
+        "packages": [
+            "n4d-samba"
+        ], 
+        "description": "Local Samba SID used for Windows system", 
+        "value": null
+    }, 
+    "ENABLE_NSS_LDAP": {
+        "function": "lliurex.variables.enable_nss_ldap.init", 
+        "packages": [
+            "n4d-samba"
+        ], 
+        "description": "LDAP IS READY AND NSSWITCH IS CONFIGURED TO USE IT IN ADDITION TO FILES", 
+        "value": null
+    }, 
+    "SAMBA_DOMAIN_NAME": {
+        "function": "lliurex.variables.samba_domain_name.init", 
+        "packages": [
+            "n4d-samba"
+        ], 
+        "description": "Domain name for samba", 
+        "value": null
+    }, 
+    "DEADTIME": {
+        "function": "lliurex.variables.deadtime.init", 
+        "packages": [
+            "n4d-samba"
+        ], 
+        "description": "Time for close inactive connection", 
+        "value": null
+    }
+}

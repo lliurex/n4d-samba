@@ -1,0 +1,1 @@
+to dn.subtree="ou=Students,ou=People,{{ LDAP_BASE_DN }}" attrs=userPassword by dn="cn=admin,{{ LDAP_BASE_DN }}" write by group/x-lliurex-group-acl/member="cn=admins,ou=Profiles,ou=Groups,{{ LDAP_BASE_DN }}" write  by dn="ou=Teachers,ou=People,{{ LDAP_BASE_DN }}" write by self write by dn="cn=roadmin,{{ LDAP_BASE_DN }}" read by anonymous auth by * none 

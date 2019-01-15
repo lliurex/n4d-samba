@@ -1,0 +1,9 @@
+{
+	"cn={{ GROUP_NAME }},ou=System,ou=Groups,{{ LDAP_BASE_DN }}":
+		{
+		"objectClass":["posixGroup","x-lliurex-group-acl"],
+		"cn":"{{ GROUP_NAME }}",
+		"gidNumber" : "{{ GROUP_ID }}",
+		"description": "Member of System Groups"
+		}
+}

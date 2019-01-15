@@ -1,0 +1,1 @@
+to * by dn.exact="cn=admin,{{ LDAP_BASE_DN }}" write by group/x-lliurex-group-acl/member="cn=admins,ou=Profiles,ou=Groups,{{ LDAP_BASE_DN }}" write by * none break

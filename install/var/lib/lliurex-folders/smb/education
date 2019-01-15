@@ -1,0 +1,44 @@
+[home]
+path = /net/server-sync/home
+writable = yes
+nt acl support = yes
+mount_point = /run/$USER/home
+force create mode = 0660
+force directory mode = 0770
+create mask = 0770
+directory mask = 0770
+
+
+[share]
+path = /net/server-sync/share
+writable = yes
+nt acl support = yes
+mount_point = /run/$USER/share
+force create mode = 0660
+force directory mode = 0770
+create mask = 0770
+directory mask = 0770
+
+
+[share_teachers]
+path = /net/server-sync/teachers_share
+writable = yes
+nt acl support = yes
+mount_point = /run/$USER/teachers_share
+force create mode = 0660
+force directory mode = 0770
+create mask = 0770
+directory mask = 0770
+
+
+[groups_share]
+path = /net/server-sync/groups_share
+writable = yes
+nt acl support = yes
+mount_point = /run/$USER/groups_share
+force create mode = 0660
+force directory mode = 0770
+create mask = 0770
+directory mask = 0770
+
+

@@ -1,0 +1,161 @@
+{
+	"ou=People,{{ LDAP_BASE_DN }}":
+		{
+		"objectClass":["organizationalUnit"],
+		"ou":"People"
+		},
+	"ou=Groups,{{ LDAP_BASE_DN }}":
+		{
+		"objectClass":["organizationalUnit"],
+		"ou":"Groups"
+		},
+	"ou=Machines,{{ LDAP_BASE_DN }}":
+		{
+		"objectClass":["organizationalUnit"],
+		"ou":"machines"
+		},
+	"ou=Idmap,{{ LDAP_BASE_DN }}":
+		{
+		"objectClass":["organizationalUnit"],
+		"ou":"Idmap"
+		},
+	"sambaDomainName={{ SAMBA_DOMAIN_NAME }},{{ LDAP_BASE_DN }}":
+		{
+		"objectClass" : ["sambaDomain","sambaUnixIdPool"],
+		"sambaDomainName" :"{{ SAMBA_DOMAIN_NAME }}",
+		"sambaSID": "{{ SAMBASID }}",
+		"gidNumber": "1000",
+		"uidNumber":"1000",
+		"sambaNextRid":"1000"
+		},	
+	"cn=Administrators,ou=Groups,{{ LDAP_BASE_DN }}":
+		{
+	        "sambaGroupType": "4", 
+	        "displayName": "Administrators", 
+	        "cn": "Administrators", 
+	        "objectClass": ["top","posixGroup","sambaGroupMapping","x-lliurex-group-acl"], 
+	        "sambaSID": "S-1-5-32-544", 
+	        "gidNumber": "544", 
+	        "description": "Netbios Domain Members can fully administer the computer/sambaDomainName"
+        	}, 
+	"cn=Print Operators,ou=Groups,{{ LDAP_BASE_DN }}":
+		{
+	        "sambaGroupType": "4", 
+        	"displayName": "Print Operators", 
+	        "cn": "Print Operators", 
+        	"objectClass": ["top","posixGroup","sambaGroupMapping","x-lliurex-group-acl"], 
+	        "sambaSID": "S-1-5-32-550", 
+	        "gidNumber": "550", 
+	        "description": "Netbios Domain Print Operators"
+        	}, 
+	"cn=Backup Operators,ou=Groups,{{ LDAP_BASE_DN }}":
+		{
+        	"sambaGroupType": "4", 
+	        "displayName": "Backup Operators", 
+        	"cn": "Backup Operators", 
+	        "objectClass": ["top","posixGroup", "sambaGroupMapping","x-lliurex-group-acl"], 
+                "sambaSID": "S-1-5-32-551", 
+                "gidNumber": "551", 
+                "description": "Netbios Domain Members can bypass file security to back up files"
+	        }, 
+	"cn=Replicators,ou=Groups,{{ LDAP_BASE_DN }}":
+		{
+	        "sambaGroupType": "4", 
+	        "displayName": "Replicators", 
+	        "cn": "Replicators", 
+	        "objectClass": ["top","posixGroup","sambaGroupMapping","x-lliurex-group-acl"], 
+	        "sambaSID": "S-1-5-32-552", 
+	        "gidNumber": "552", 
+	        "description": "Netbios Domain Supports file replication in a sambaDomainName"
+        	}, 
+	"cn=Account Operators,ou=Groups,{{ LDAP_BASE_DN }}":
+		{
+	        "sambaGroupType": "4", 
+	        "displayName": "Account Operators", 
+	        "cn": "Account Operators", 
+	        "objectClass": ["top","posixGroup","sambaGroupMapping","x-lliurex-group-acl"], 
+	        "sambaSID": "S-1-5-32-548", 
+        	"gidNumber": "548", 
+	        "description": "Netbios Domain Users to manipulate users accounts"
+        	},  
+	"cn=Domain Admins,ou=Groups,{{ LDAP_BASE_DN }}":
+		{
+		"sambaGroupType": "2", 
+		"displayName": "Domain Admins", 
+		"description": "Netbios Domain Administrators", 
+		"objectClass": ["top","posixGroup","sambaGroupMapping","x-lliurex-group-acl"], 
+	        "memberUid": "root", 
+	        "sambaSID": "{{ SAMBASID }}-512", 
+        	"gidNumber": "512", 
+	        "cn": "Domain Admins"
+        	},
+	"cn=Domain Users,ou=Groups,{{ LDAP_BASE_DN }}":
+		{
+		"sambaGroupType": "2", 
+		"displayName": "Domain Users", 
+		"cn": "Domain Users", 
+		"objectClass": ["top","posixGroup","sambaGroupMapping","x-lliurex-group-acl"], 
+        	"sambaSID": "{{ SAMBASID }}-513", 
+	        "gidNumber": "513", 
+        	"description": "Netbios Domain Users"
+	        },
+	"cn=Domain Guests,ou=Groups,{{ LDAP_BASE_DN }}":
+		{
+		"sambaGroupType": "2", 
+		"displayName": "Domain Guests", 
+		"cn": "Domain Guests", 
+		"objectClass": ["top","posixGroup","sambaGroupMapping","x-lliurex-group-acl"], 
+        	"sambaSID": "{{ SAMBASID }}-514", 
+	        "gidNumber": "514", 
+		"description": "Netbios Domain Guests Users"
+        	},
+	"cn=Domain Computers,ou=Groups,{{ LDAP_BASE_DN }}":
+		{
+	        "sambaGroupType": "2", 
+        	"displayName": "Domain Computers", 
+	        "cn": "Domain Computers", 
+        	"objectClass": ["top","posixGroup","sambaGroupMapping"], 
+	        "sambaSID": "{{ SAMBASID }}-515", 
+	        "gidNumber": "515", 
+	        "description": "Netbios Domain Computers accounts"
+	        },
+	"ou=Managed,ou=Groups,{{ LDAP_BASE_DN }}":
+		{
+		"objectClass":["organizationalUnit","x-lliurex-ou-properties"],
+		"ou":"Managed",
+		"x-lliurex-xid-counter":"11000"
+		},
+	"ou=Profiles,ou=Groups,{{ LDAP_BASE_DN }}":
+		{
+		"objectClass":["organizationalUnit","x-lliurex-ou-properties"],
+		"ou":"Profiles",
+		"x-lliurex-xid-counter":"10001"
+		},
+	"cn=admins,ou=Profiles,ou=Groups,{{ LDAP_BASE_DN }}":
+		{
+		"objectClass" : ["top","posixGroup","sambaGroupMapping","x-lliurex-group-acl"],
+		"cn" : "admins",
+		"gidNumber": "10001",
+		"description" : "All system administrators on system",
+		"sambaSID" : "{{ SAMBASID}}-10001",
+		"sambaGroupType": "2"
+		},
+	"ou=System,ou=Groups,{{ LDAP_BASE_DN }}":
+		{
+		"objectClass":["organizationalUnit","x-lliurex-ou-properties"],
+		"ou":"System",
+		"x-lliurex-xid-counter":"0"
+		},
+	"ou=Admins,ou=People,{{ LDAP_BASE_DN }}":
+		{
+		"objectClass":["organizationalUnit","x-lliurex-ou-properties"],
+		"ou":"Admins",
+		"x-lliurex-xid-counter":"1042"
+		},
+	"ou=Machines,ou=People,{{ LDAP_BASE_DN }}":
+		{
+		"objectClass":["organizationalUnit","x-lliurex-ou-properties"],
+		"ou":"Machines",
+		"x-lliurex-xid-counter":"0"
+		}
+}

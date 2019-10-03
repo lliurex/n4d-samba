@@ -24,14 +24,6 @@ case "$1" in
 	n4d-modules enable-plugin /etc/n4d/conf.d/SambaManager || true
 	n4d-modules enable-plugin /etc/n4d/conf.d/SambaSIDFixer || true
 
-	if dpkg --compare-versions "$2" lt 0.27.3; then
-		if [ -e '/var/lib/n4d/variables-dir/SRV_IP' ]; then
-			echo "New smb configuration. Restarting service..."
-			deb-systemd-invoke restart smbd || true
-		fi
-	fi	
-
-
 	;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

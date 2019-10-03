@@ -1,3 +1,7 @@
+[global]
+  vfs objects = acl_xattr
+  map acl inherit = yes
+
 [home]
 path = /net/server-sync/home
 writable = yes

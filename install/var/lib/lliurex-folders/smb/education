@@ -36,9 +36,9 @@ path = /net/server-sync/groups_share
 writable = yes
 nt acl support = yes
 mount_point = /run/$USER/groups_share
-force create mode = 0660
-force directory mode = 0770
-create mask = 0770
-directory mask = 0770
+force create mode = 0664
+force directory mode = 0775
+create mask = 0775
+directory mask = 0775
 
 

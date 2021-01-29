@@ -2,7 +2,7 @@ import ldap
 import ldap.sasl
 import subprocess
 import re
-import os
+import os,sys
 
 class SambaSIDFixer:
 
@@ -11,7 +11,7 @@ class SambaSIDFixer:
 		self.LDAP_SECRET2 = '/etc/lliurex-secrets/passgen/ldap.secret'
 
 	def getActualSambaSID(self):
-		result = subprocess.Popen('LANG=C LANGUAGE=en net getlocalsid',stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True).communicate()[0]
+		result = subprocess.Popen('LANG=C LANGUAGE=en net getlocalsid',stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True).communicate()[0].decode("utf-8")
 		sid = re.search('SID for domain \w+ is: (.*)',result)
 		if sid != None:
 			sid = sid.group(1)
@@ -49,7 +49,7 @@ class SambaSIDFixer:
 			self.connect_ldap.bind_s("cn=admin,"+ldapbasedn,password)
 			return True
 		except Exception as e:
-			print "\n\nError" + str(e) + "\n\n"
+			print ("\n\nError" + str(e) + "\n\n")
 			self.connect_ldap = None
 			return False
 
@@ -68,14 +68,18 @@ class SambaSIDFixer:
 					try:
 						self.connect_ldap.modify_s(dn,updateSID)
 					except Exception as e:
-						print " *** Error : " , e
+						print (" *** Error : " , e)
 						pass
 		
 
 	def run(self):
-		print self.connection_ldap()
-		actualDomainSID = self.getActualSambaSID()
-		self.updateUsers(actualDomainSID)
+		if self.connection_ldap():
+			print("True")
+			actualDomainSID = self.getActualSambaSID()
+			self.updateUsers(actualDomainSID)
+		else:
+			print("False")
+			sys.exit(1)
 
 if __name__ == '__main__':
 	a = SambaSIDFixer()

@@ -12,9 +12,9 @@ try:
 	
 	
 	l.search_s('dc=lliurex',ldap.SCOPE_SUBTREE)
-	print l.search_s('cn=config',ldap.SCOPE_SUBTREE,'cn=*',['cn'])
+	print (l.search_s('cn=config',ldap.SCOPE_SUBTREE,'cn=*',['cn']))
 	
 	
 except Exception as e:
-	print "!"
-	print e
+	print ("!")
+	print (e)

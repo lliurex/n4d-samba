@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import json
 import ldap
 import ldap.modlist
@@ -10,7 +10,7 @@ for linea in total:
     if linea != '\n':
         x,y = linea[:len(linea) - 1 ].split(':')
         if 'dn' in x:
-            print y
+            print (y)
         if objeto.has_key(x):
             if type(objeto[x]) == type(""):
                 aux = objeto[x]
@@ -21,7 +21,7 @@ for linea in total:
             objeto[x] = y.strip()
     else:
         dn = objeto.pop('dn')
-        print dn
+        print (dn)
         listado[dn]= objeto
         #listado[dn] = ldap.modlist.addModlist(objeto)
         #print ldap.modlist.addModlist(objeto)
@@ -34,5 +34,5 @@ if objeto != {}:
     objeto={}
 
 for w in listado.keys():
-    print w
-print json.dumps(listado,indent=8)
+    print (w)
+print (json.dumps(listado,indent=8))

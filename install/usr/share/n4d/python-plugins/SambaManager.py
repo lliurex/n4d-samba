@@ -3,7 +3,8 @@ import ldap.sasl
 import ldap.modlist
 import ast
 import datetime
-import smbpasswd
+#import smbpasswd
+import passlib
 import grp
 import tempfile
 import shutil
@@ -15,9 +16,28 @@ import time
 import tarfile
 import random
 import string
+import n4d.responses
 
 from jinja2 import Environment
 from jinja2.loaders import FileSystemLoader
+
+BACKUP_ERROR=-10
+RESTORE_ERROR=-20
+LDAP_ERROR=-30
+LDAP_MODIFY_S_ERROR=-40
+LDAP_LLIUREX_XID_S_ERROR=-50
+LDAP_OU_ERROR=-60
+SLAPD_ERROR=-70
+LOAD_SCHEMA_ERROR=-80
+LOAD_INDEX_ERROR=-90
+LOAD_BASIC_STRUCTURE_ERROR=-90
+LOAD_ALL_SYSTEM_GROUPS_ERROR=-100
+UPDATE_XID_COUNTER_ERROR=-110
+LOAD_ADMIN_SYSTEM_USER_ERROR=-120
+INSERT_ADMIN_PROFILE_ERROR=-130
+INSERT_ADMIN_GROUPS_ERROR=-140
+LOAD_ACL_SAMBA_EDUCATION_ERROR=-150
+CHANGE_SID_ERROR=-160
 
 class SambaManager:
 	predepends = ['VariablesManager','SlapdManager']
@@ -42,7 +62,8 @@ class SambaManager:
 	#def startup
 	
 	def test(self):
-		pass
+		#pass
+		return n4d.responses.build_successful_call_response()
 	#def test
 	
 	def backup(self,folder_path='/backup/'):
@@ -55,10 +76,12 @@ class SambaManager:
 			tar.add('/etc/lliurex-secrets/passgen/ldap.secret')
 			tar.add('/var/lib/lliurex-folders')
 			tar.close()
-			return [True,file_path]
+			#return [True,file_path]
+			return n4d.responses.build_successful_call_response(file_path)
 			
 		except Exception as e:
-			return [False,str(e)]
+			return n4d.responses.build_failed_call_response(BACKUP_ERROR)
+			#return [False,str(e)]
 	#def backup
 	
 	def restore(self,file_path=None):
@@ -80,17 +103,19 @@ class SambaManager:
 				os.system('rsync -ax ' + copy_folder + ' /')
 				os.system('chmod 600 /etc/lliurex-secrets/passgen/ldap.secret')
 				os.system('smbpasswd -w $(cat /etc/lliurex-secrets/passgen/ldap.secret)')
-				return [True,""]
+				return n4d.responses.build_successful_call_response()
+				#return [True,""]
 				
 		except Exception as e:
-				
-			return [False,str(e)]
+			return n4d.responses.build_failed_call_response(RESTORE_ERROR)
+			#return [False,str(e)]
 	#def restore
 
 	def update_xid_counter(self,ou,new_value):
 		if not self.test_ldap_connection():
 			if not self.connection_ldap():
-				return {"status":False,"msg":"Connection with ldap is not created"}
+				#return {"status":False,"msg":"Connection with ldap is not created"}
+				return n4d.responses.build_failed_call_response(LDAP_ERROR)
 		
 		list_entry = self.connect_ldap.search_s(ou,ldap.SCOPE_SUBTREE)
 		if len(list_entry) > 0 :
@@ -103,12 +128,16 @@ class SambaManager:
 					try:
 						self.connect_ldap.modify_s(name_entry,mod_entry)
 					except Exception as e:
-						return [False,str(e.message)]
-				return [True,""]
+						return n4d.responses.build_failed_call_response(LDAP_MODIFY_S_ERROR)
+						#return [False,str(e.message)]
+				return n4d.responses.build_successful_call_response()
+				#return [True,""]
 			else:
-				return [False,"ou " + ou + " hasn't x-lliurex-xid-counter property"]
+				return n4d.responses.build_failed_call_response(LDAP_LLIUREX_XID_S_ERROR)
+				#return [False,"ou " + ou + " hasn't x-lliurex-xid-counter property"]
 		else:
-			return [False,"ou " + ou + " not exist"]
+			return n4d.responses.build_failed_call_response(LDAP_OU_ERROR)
+			#return [False,"ou " + ou + " not exist"]
 	#def update_xid_counter
 
 	def load_schema(self):
@@ -117,11 +146,14 @@ class SambaManager:
 		aux_dic = ast.literal_eval(string_template)
 		for entry_name in aux_dic.keys():
 			if not objects.has_key('SlapdManager'):
-				return {'status':False,'msg':'This function depend on SlapdManager, but this is not installed or not working'}
+				#return {'status':False,'msg':'This function depend on SlapdManager, but this is not installed or not working'}
+				return n4d.responses.build_failed_call_response(SLAPD_ERROR)
 			result = objects['SlapdManager'].load_schema(entry_name,aux_dic[entry_name],True)
 			if not result['status']:
-				return result
-		return {'status':True,'msg':'Load schema to samba'}
+				return n4d.responses.build_failed_call_response(LOAD_SCHEMA_ERROR)
+				#return result
+		#return {'status':True,'msg':'Load schema to samba'}
+		return n4d.responses.build_successful_call_response()
 	#def load_schema
 	
 	def load_index(self):
@@ -129,11 +161,14 @@ class SambaManager:
 		string_template = template.render().encode('utf-8')
 		aux_dic = ast.literal_eval(string_template)
 		if not objects.has_key('SlapdManager'):
-			return {'status':False,'msg':'This function depend on SlapdManager, but this is not installed or not working'}
+			return n4d.responses.build_failed_call_response(SLAPD_ERROR)
+			#return {'status':False,'msg':'This function depend on SlapdManager, but this is not installed or not working'}
 		result = objects['SlapdManager'].update_index(aux_dic)
 		if not result['status']:
-			return result
-		return {'status':True,'msg':'Load index to samba'}
+			return n4d.responses.build_failed_call_response(LOAD_INDEX_ERROR)
+			#return result
+		return n4d.responses.build_successful_call_response()
+		#return {'status':True,'msg':'Load index to samba'}
 	#def load_index
 	
 	def load_basic_structure(self):
@@ -143,12 +178,15 @@ class SambaManager:
 		string_template = template.render(environment_basic).encode('utf-8')
 		aux_dic = ast.literal_eval(string_template)
 		if not objects.has_key('SlapdManager'):
-			return {'status':False,'msg':'This function depend on SlapdManager, but this is not installed or not working'}
+			return n4d.responses.build_failed_call_response(SLAPD_ERROR)
+			#return {'status':False,'msg':'This function depend on SlapdManager, but this is not installed or not working'}
 		result = objects['SlapdManager'].insert_dictionary(aux_dic,i_existing=True)
 		if result['status']:
-			return {'status':True,'msg':'Load basic structure to work samba'}
+			return n4d.responses.build_successful_call_response()
+			#return {'status':True,'msg':'Load basic structure to work samba'}
 		else:
-			return result
+			return n4d.responses.build_failed_call_response(LOAD_BASIC_STRUCTURE_ERROR)
+			#return result
 	#def load_basic_structure
 	
 	def load_all_system_groups(self,min_gid=None,max_gid=1000):
@@ -166,15 +204,19 @@ class SambaManager:
 			string_template = template.render(environment_vars).encode('utf-8')
 			aux_dic = ast.literal_eval(string_template)
 			if not objects.has_key('SlapdManager'):
-				return {'status':False,'msg':'This function depend on SlapdManager, but this is not installed or not working'}
+				return n4d.responses.build_failed_call_response(SLAPD_ERROR)
+				#return {'status':False,'msg':'This function depend on SlapdManager, but this is not installed or not working'}
 			result = objects['SlapdManager'].insert_dictionary(aux_dic,i_existing=True)
 			if not result['status']:
-				return result
+				return n4d.responses.build_failed_call_response(LOAD_ALL_SYSTEM_GROUPS_ERROR)
+				#return result
 		result = self.update_xid_counter("ou=System,ou=Groups,"+environment_vars['LDAP_BASE_DN'],max_counter)
 		if result[0]:
-			return {'status':True,'msg':'Load all groups from system'}
+			return n4d.responses.build_successful_call_response()
+			#return {'status':True,'msg':'Load all groups from system'}
 		else:
-			return {'status':False,'msg':result[1]}
+			return n4d.responses.build_failed_call_response(UPDATE_XID_COUNTER_ERROR)
+			#return {'status':False,'msg':result[1]}
 	#def load_all_system_groups
 
 	def load_admin_system_user(self):
@@ -196,50 +238,65 @@ class SambaManager:
 			aux_dic = ast.literal_eval(string_template)
 			
 			if not objects.has_key('SlapdManager'):
-				return {'status':False,'msg':'This function depend on SlapdManager, but this is not installed or not working'}
+				return n4d.responses.build_failed_call_response(SLAPD_ERROR)
+				#return {'status':False,'msg':'This function depend on SlapdManager, but this is not installed or not working'}
 			result = objects['SlapdManager'].insert_dictionary(aux_dic,i_existing=True)
 			if not result['status']:
-				return result
+				return n4d.responses.build_failed_call_response(LOAD_ADMIN_SYSTEM_USER_ERROR)
+				#return result
 			aux_dn = aux_dic.keys()[0]
 			result = self.insert_to_admin_profile(aux_dn,aux_dic[aux_dn]['uid'])
 			if not result['status']:
-				return result
+				return n4d.responses.build_failed_call_response(INSERT_ADMIN_PROFILE_ERROR)
+				#return result
 		result = self.update_xid_counter("ou=Admins,ou=People,"+environment_vars['LDAP_BASE_DN'],max_uid)
 		if result[0]:
-			return {'status':True,'msg':'Load all admin users from system'}
+			#return {'status':True,'msg':'Load all admin users from system'}
+			return n4d.responses.build_successful_call_response()
 		else:
-			return {'status':False,'msg':result[1]}
+			return n4d.responses.build_failed_call_response(UPDATE_XID_COUNTER_ERROR)
+			#return {'status':False,'msg':result[1]}
 	#def load_admin_system_user
 	
 	def load_net_admin_user(self,password=None):
 		template = self.tpl_env.get_template('net-admin-user')
 		if  objects.has_key("VariablesManager"):
 			if not objects.has_key('SlapdManager'):
-				return {'status':False,'msg':'This function depend on SlapdManager, but this is not installed or not working'}
+				return n4d.responses.build_failed_call_response(SLAPD_ERROR)
+				#return {'status':False,'msg':'This function depend on SlapdManager, but this is not installed or not working'}
 			environment_vars = objects["VariablesManager"].get_variable_list(['LDAP_BASE_DN','SAMBASID'])
 			environment_vars['USERPASSWORD'] = objects['SlapdManager'].generate_ssha_password(password).strip()
-			environment_vars["NTPASSWORD"]=smbpasswd.nthash(password)
-			environment_vars["LMPASSWORD"]=smbpasswd.lmhash(password)
+			#Ported to hashlib
+			#environment_vars["NTPASSWORD"]=smbpasswd.nthash(password)
+			environment_vars["NTPASSWORD"]=passlib.hash.nthash.encrypt(password).upper()
+			#environment_vars["LMPASSWORD"]=smbpasswd.lmhash(password)
+			environment_vars["LMPASSWORD"]=passlib.hash.lmhash.encrypt(password).upper()
 			environment_vars["LASTSET"]=str(int(time.time()))
 			string_template = template.render(environment_vars).encode('utf-8')
 			aux_dic = ast.literal_eval(string_template)
 			result = objects['SlapdManager'].insert_dictionary(aux_dic,i_existing=True)
 			if not result['status']:
-				return result
+				return n4d.responses.build_failed_call_response(LOAD_NET_ADMIN_USER_ERROR)
+				#return result
 			aux_dn = aux_dic.keys()[0]
 			result = self.insert_to_admin_profile(aux_dn,aux_dic[aux_dn]['uid'])
 			if not result['status']:
-				return result
+				return n4d.responses.build_failed_call_response(INSERT_ADMIN_PROFILE_ERROR)
+				#return result
 			result = self.insert_to_admin_groups(aux_dic[aux_dn]['uid'])
 			if not result['status']:
-				return result
+				return n4d.responses.build_failed_call_response(INSERT_ADMIN_GROUPS_ERROR)
+				#return result
 			result = self.update_xid_counter("ou=Admins,ou=People,"+environment_vars['LDAP_BASE_DN'],1042)
 			if result[0]:
-				return {'status':True,'msg':'Load all admin users from system'}
+				#return {'status':True,'msg':'Load all admin users from system'}
+				return n4d.responses.build_successful_call_response()
 			else:
-				return {'status':False,'msg':result[1]}
+				return n4d.responses.build_failed_call_response(UPDATE_XID_COUNTER_ERROR)
+				#return {'status':False,'msg':result[1]}
 		else:
-			return {'status':False,'msg':'Variables Manager n4d plugin not working'}
+			return n4d.responses.build_failed_call_response()
+			#return {'status':False,'msg':'Variables Manager n4d plugin not working'}
 			
 	def load_ro_admin_user(self):
 		
@@ -252,7 +309,8 @@ class SambaManager:
 		aux_dic=ast.literal_eval(string_template)
 		result=objects["SlapdManager"].insert_dictionary(aux_dic,i_existing=True)
 		
-		return result
+		return n4d.responses.build_successful_call_response()
+		#return result
 		
 		
 	#def load_ro_admin_user
@@ -264,16 +322,20 @@ class SambaManager:
 		string_template = template.render(environment_vars).encode('utf-8')
 		aux_dic = ast.literal_eval(string_template)
 		if not objects.has_key('SlapdManager'):
-			return {'status':False,'msg':'This function depend on SlapdManager, but this is not installed or not working'}
+			return n4d.responses.build_failed_call_response(SLAPD_ERROR)
+			#return {'status':False,'msg':'This function depend on SlapdManager, but this is not installed or not working'}
 		result = objects['SlapdManager'].insert_dictionary(aux_dic,i_existing=True)
 		if not result['status']:
-			return result
+			return n4d.responses.build_failed_call_response(LOAD_EDUCATION_ERROR)
+			#return result
 		result = self.update_xid_counter("ou=Profiles,ou=Groups,"+environment_vars['LDAP_BASE_DN'],10005)
 		if result[0]:
 			objects['VariablesManager'].init_variable('ENABLE_NSS_LDAP',{'ENABLE_NSS_LDAP':'ENABLED'})
-			return {'status':True,'msg':'Load structure for education model'}
+			return n4d.responses.build_successful_call_response()
+			#return {'status':True,'msg':'Load structure for education model'}
 		else:
-			return {'status':False,'msg':result[1]}
+			return n4d.responses.build_failed_call_response(UPDATE_XID_COUNTER_ERROR)
+			#return {'status':False,'msg':result[1]}
 	#def load_education
 	
 	def configure_smb(self):
@@ -289,7 +351,8 @@ class SambaManager:
 		f.writelines(string_template)
 		f.close()
 		n4d_mv(filename,'/etc/samba/smb.conf')
-		return {'status':True,'msg':'Configured samba'}
+		return n4d.responses.build_successful_call_response()
+		#return {'status':True,'msg':'Configured samba'}
 	#def configure_smb
 	
 	def load_acl_samba_education(self):
@@ -303,13 +366,16 @@ class SambaManager:
 				os.symlink(self.available_acl_path + 'subtree_students_samba',self.enable_acl_path + '400_subtree_students_samba')
 		result = objects['SlapdManager'].load_acl()
 		if not result['status']:
-			return result
-		return {'status':True,'msg':'Loaded acl'}
+			return n4d.responses.build_failed_call_response(LOAD_ACL_SAMBA_EDUCATION_ERROR)
+			#return result
+		return n4d.responses.build_successful_call_response()
+		#return {'status':True,'msg':'Loaded acl'}
 	#def load_acl_samba
 	
 	def update_root_password_samba(self,password):
 		subprocess.Popen(['smbpasswd','-w',password],stdout=subprocess.PIPE).communicate()
-		return {'status':True,'msg':'Update root password on samba database'}
+		return n4d.responses.build_successful_call_response()
+		#return {'status':True,'msg':'Update root password on samba database'}
 	#def update_root_password_samba
 	
 	def insert_to_admin_profile(self,dn,uid):
@@ -328,14 +394,17 @@ class SambaManager:
 			except ldap.ALREADY_EXISTS as e:
 				pass
 			except Exception as e:
-				return {'status':False,'msg':'insert_to_admin_profile error :'+ str(e)}
-		return {'status':True,'msg':str(uid)+ 'has been added to admin profile'}
+				#return {'status':False,'msg':'insert_to_admin_profile error :'+ str(e)}
+				return n4d.responses.build_failed_call_response(INSERT_ADMIN_PROFILE_ERROR)
+		#return {'status':True,'msg':str(uid)+ 'has been added to admin profile'}
+		return n4d.responses.build_successful_call_response()
 	#def insert_to_admin_profile
 	
 	def insert_to_admin_groups(self, uid):
 		if not self.test_ldap_connection():
 			if not self.connection_ldap():
-				return {"status":False,"msg":"Connection with ldap is not created"}
+				return n4d.responses.build_failed_call_response(LDAP_ERROR)
+				#return {"status":False,"msg":"Connection with ldap is not created"}
 		if  objects.has_key("VariablesManager"):
 			environment_vars = objects["VariablesManager"].get_variable_list(['LDAP_BASE_DN'])
 		system_admin_groups = ['sudo','adm','plugdev','lpadmin','cdrom','dip','epoptes']
@@ -347,15 +416,19 @@ class SambaManager:
 			except ldap.ALREADY_EXISTS as e:
 				pass
 			except Exception as e:
-				return {'status':False,'msg':'insert to admin group error :'+ str(e)}	
-		return {'status':True,'msg':'All ok'}
+				return n4d.responses.build_failed_call_response(INSERT_ADMIN_GROUPS_ERROR)
+				#return {'status':False,'msg':'insert to admin group error :'+ str(e)}	
+		return n4d.responses.build_successful_call_response()
+		#return {'status':True,'msg':'All ok'}
 
 	def set_sambasid(self,sambasid):
 		result = os.system('net setlocalsid ' + sambasid)
 		if result == 0:
-			return{'status':True,'msg': 'SID ' + str(sambasid) + ' has been set'}
+			return n4d.responses.build_successful_call_response()
+			#return{'status':True,'msg': 'SID ' + str(sambasid) + ' has been set'}
 		else:
-			return{'status':False,'msg': 'SID could not change'}
+			return n4d.responses.build_failed_call_response(CHANGE_SID_ERROR)
+			#return{'status':False,'msg': 'SID could not change'}
 	'''
 		Internal Methods
 	'''
@@ -390,7 +463,7 @@ class SambaManager:
 			self.connect_ldap.bind_s("cn=admin,"+environment_vars['LDAP_BASE_DN'],password)
 			return True
 		except Exception as e:
-			print "\n\nError" + str(e) + "\n\n"
+			print ("\n\nError" + str(e) + "\n\n")
 			self.connect_ldap = None
 			return False
 

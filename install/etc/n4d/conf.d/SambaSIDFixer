@@ -1,8 +1,0 @@
-[SETUP]
-type=python
-path=SambaSIDFixer.py
-class=SambaSIDFixer
-[METHODS]
-updateUsers=adm,admins
-isNeedFixIt=adm,admins
-run=adm,admins

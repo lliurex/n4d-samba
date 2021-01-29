@@ -19,7 +19,7 @@ class SambaParser:
 	def parse_lines(self,lines,path,section=None):
 		
 		count=1
-		if not self.conf.has_key(section):
+		if not section in self.conf.keys():
 			self.conf[section]={}
 		
 		for line in lines:

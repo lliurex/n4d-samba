@@ -40,7 +40,7 @@ LOAD_ACL_SAMBA_EDUCATION_ERROR=-150
 CHANGE_SID_ERROR=-160
 
 class SambaManager:
-	predepends = ['VariablesManager','SlapdManager']
+	predepends = ['SlapdManager']
 	def __init__(self):
 		# Vars
 		

@@ -3,6 +3,7 @@ import ldap.sasl
 import ldap.modlist
 import ast
 import datetime
+import subprocess
 #import smbpasswd
 import passlib
 import grp
@@ -16,7 +17,9 @@ import time
 import tarfile
 import random
 import string
+
 import n4d.responses
+import n4d.server.core
 
 from jinja2 import Environment
 from jinja2.loaders import FileSystemLoader
@@ -42,8 +45,10 @@ CHANGE_SID_ERROR=-160
 class SambaManager:
 	predepends = ['SlapdManager']
 	def __init__(self):
-		# Vars
 		
+		self.core=n4d.server.core.Core.get_core()
+		
+		# Vars
 		self.LDAP_SECRET1 = '/etc/lliurex-cap-secrets/ldap-master/ldap'
 		self.LDAP_SECRET2 = '/etc/lliurex-secrets/passgen/ldap.secret'
 		self.log_path = '/var/log/n4d/samba'
@@ -55,12 +60,27 @@ class SambaManager:
 	def apt(self):
 		pass
 	#def apt
+	
 	def startup(self,options):
-		objects["VariablesManager"].init_variable('SAMBASID')
+		
+		self.core.set_variable("SAMBASID",self.get_local_sid())
 		self.connection_ldap()
 
 	#def startup
-	
+
+	def get_local_sid(self):
+		
+		sid=""
+		try:
+			p=subprocess.Popen(["net","getlocalsid"],stdout=subprocess.PIPE).communicate()[0]
+			sid=p.decode("utf-8").split(":")[1].strip()
+		except Exception as e:
+			sid=""
+
+		return sid
+
+	#def get_local_sid
+
 	def test(self):
 		#pass
 		return n4d.responses.build_successful_call_response()

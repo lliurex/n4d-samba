@@ -1,0 +1,254 @@
+n4d-samba (0.30) focal; urgency=medium
+
+  * First focal release
+
+ -- Hector Garcia Huerta <hectorgh@gmail.com>  Thu, 11 Feb 2021 09:10:53 +0100
+
+n4d-samba (0.27.5) bionic; urgency=medium
+
+  * New groups share configuration
+
+ -- Hector Garcia Huerta <hectorgh@gmail.com>  Tue, 08 Oct 2019 09:36:32 +0200
+
+n4d-samba (0.27.4) bionic; urgency=medium
+
+  * Reverting changes for now
+
+ -- Hector Garcia Huerta <hectorgh@gmail.com>  Thu, 03 Oct 2019 16:38:40 +0200
+
+n4d-samba (0.27.3) bionic; urgency=medium
+
+  * Added extra acl options to mount points
+
+ -- Hector Garcia Huerta <hectorgh@gmail.com>  Thu, 03 Oct 2019 10:32:41 +0200
+
+n4d-samba (0.27.2) bionic; urgency=medium
+
+  * Adding sudo group
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Thu, 14 Feb 2019 13:05:50 +0100
+
+n4d-samba (0.27.1) bionic; urgency=high
+
+  * Adding missing dirs
+
+ -- Hector Garcia Huerta <hectorgh@gmail.com>  Mon, 28 Jan 2019 18:02:19 +0100
+
+n4d-samba (0.27) bionic; urgency=medium
+
+  * First bionic release
+
+ -- Hector Garcia Huerta <hectorgh@gmail.com>  Thu, 26 Apr 2018 09:23:40 +0200
+
+n4d-samba (0.26) xenial; urgency=high
+
+  * Added smbd restart on-failure. Seems slave servers need extra time to load samba
+  * Added systemctl daemon-reload in postinst in case smbd.service unit changes
+
+ -- Hector Garcia Huerta <hectorgh@gmail.com>  Fri, 02 Jun 2017 09:45:01 +0200
+
+n4d-samba (0.25.9) xenial; urgency=medium
+
+  * Stopped relying on Golem to create roadmin password on initialization
+
+ -- Hector Garcia Huerta <hectorgh@gmail.com>  Mon, 14 Mar 2016 09:33:05 +0100
+
+n4d-samba (0.25.8) xenial; urgency=high
+
+  * Trying to move smbd to systemd
+
+ -- Hector Garcia Huerta <hectorgh@gmail.com>  Tue, 08 Mar 2016 08:40:16 +0100
+
+n4d-samba (0.25.7) xenial; urgency=high
+
+  * Adding smbclient dependency
+
+ -- Hector Garcia Huerta <hectorgh@gmail.com>  Tue, 23 Feb 2016 12:24:58 +0100
+
+n4d-samba (0.25.6) xenial; urgency=high
+
+  * First xenial release
+
+ -- Hector Garcia Huerta <hectorgh@gmail.com>  Tue, 02 Feb 2016 09:58:06 +0100
+
+n4d-samba (0.25.5) trusty; urgency=high
+
+  * Updated samba mask to allow clients to have group rw perms
+
+ -- Hector Garcia Huerta <hectorgh@gmail.com>  Wed, 18 Nov 2015 12:11:45 +0100
+
+n4d-samba (0.25.4) trusty; urgency=high
+
+  * Enable module without restart n4d
+
+ -- Raul Rodrigo Segura <raurodse@gmail.com>  Fri, 02 Oct 2015 09:31:47 +0200
+
+n4d-samba (0.25.3) trusty; urgency=high
+
+  * Add scripts to fix sambaSID
+
+ -- Raul Rodrigo Segura <raurodse@gmail.com>  Thu, 01 Oct 2015 14:43:15 +0200
+
+n4d-samba (0.25.2) trusty; urgency=high
+
+  * Adding missing roadmin ACL
+
+ -- Hector Garcia Huerta <hectorgh@gmail.com>  Mon, 07 Sep 2015 09:47:43 +0200
+
+n4d-samba (0.25.1) trusty; urgency=medium
+
+  * Moved postinst roadmin actions to a n4d one-shot
+
+ -- Hector Garcia Huerta <hectorgh@gmail.com>  Fri, 04 Sep 2015 11:57:30 +0200
+
+n4d-samba (0.25) trusty; urgency=high
+
+  * Adding roadmin (read-only admin) support 
+
+ -- Hector Garcia Huerta <hectorgh@gmail.com>  Tue, 01 Sep 2015 13:46:49 +0200
+
+n4d-samba (0.24) trusty; urgency=medium
+
+  * removing samba printers configuration
+
+ -- Hector Garcia Huerta <hectorgh@gmail.com>  Tue, 25 Nov 2014 17:19:24 +0100
+
+n4d-samba (0.23) trusty; urgency=high
+
+  *  New releases for LliureX 15.05
+
+ -- Alfons Lloret Sananton <turix13@gmail.com>  Wed, 01 Oct 2014 09:59:33 +0200
+
+n4d-samba (0.22) precise; urgency=high
+
+  * Add method to backup and restore
+
+ -- Raul Rodrigo Segura <raurodse@gmail.com>  Wed, 17 Sep 2014 17:58:43 +0200
+
+n4d-samba (0.21) precise; urgency=low
+
+  * Added method to change sambasid
+
+ -- Raul Rodrigo Segura <raurodse@gmail.com>  Thu, 07 Nov 2013 16:50:19 +0100
+
+n4d-samba (0.20) precise; urgency=low
+
+  * Remove member from cn=admin
+
+ -- Raul Rodrigo Segura <raurodse@gmail.com>  Thu, 07 Nov 2013 16:42:01 +0100
+
+n4d-samba (0.19) precise; urgency=high
+
+  * Adding group_share
+
+ -- Hector Garcia Huerta <hectorgh@gmail.com>  Mon, 08 Jul 2013 09:35:29 +0200
+
+n4d-samba (0.18) precise; urgency=low
+
+  * Fixed netadmin creation
+
+ -- Hector Garcia Huerta <hectorgh@gmail.com>  Mon, 08 Jul 2013 09:34:50 +0200
+
+n4d-samba (0.17) precise; urgency=low
+
+  * Releases
+
+ -- Raul Rodrigo Segura <raurodse@gmail.com>  Mon, 24 Jun 2013 14:48:06 +0200
+
+n4d-samba (0.16) precise; urgency=low
+
+  * Added netadmin to epoptes group
+
+ -- Raul Rodrigo Segura <raurodse@gmail.com>  Mon, 24 Jun 2013 14:46:37 +0200
+
+n4d-samba (0.15) precise; urgency=low
+
+  * Changed share_teachers by teachers_share
+
+ -- Raul Rodrigo Segura <raurodse@gmail.com>  Mon, 03 Jun 2013 10:05:16 +0200
+
+n4d-samba (0.14) precise; urgency=low
+
+  * Added include for add home, share and share_teachers folders
+
+ -- Raul Rodrigo Segura <raurodse@gmail.com>  Wed, 22 May 2013 18:30:44 +0200
+
+n4d-samba (0.13) precise; urgency=low
+
+  * Fix bugs with create netadmin user
+
+ -- Raul Rodrigo Segura <raurodse@gmail.com>  Wed, 22 May 2013 08:57:45 +0200
+
+n4d-samba (0.12) precise; urgency=low
+
+  * Added function to create netadmin user.
+
+ -- Raul Rodrigo Segura <raurodse@gmail.com>  Wed, 15 May 2013 23:26:56 +0200
+
+n4d-samba (0.11) precise; urgency=low
+
+  * Change smb file to education
+
+ -- Raul Rodrigo Segura <raurodse@gmail.com>  Wed, 08 May 2013 10:28:36 +0200
+
+n4d-samba (0.10) precise; urgency=low
+
+  * Fix path
+
+ -- Raul Rodrigo Segura <raurodse@gmail.com>  Mon, 06 May 2013 12:08:51 +0200
+
+n4d-samba (0.9) precise; urgency=low
+
+  * Added smb file to import on clients
+
+ -- Raul Rodrigo Segura <raurodse@gmail.com>  Mon, 22 Apr 2013 13:37:18 +0200
+
+n4d-samba (0.8) precise; urgency=low
+
+  * Fixed bug with reinitialize server
+
+ -- Raul Rodrigo Segura <raurodse@gmail.com>  Mon, 22 Apr 2013 13:30:57 +0200
+
+n4d-samba (0.7) precise; urgency=low
+
+  * Update to fix postinst and preinst
+
+ -- Raul Rodrigo Segura <raurodse@gmail.com>  Wed, 27 Feb 2013 12:53:42 +0100
+
+n4d-samba (0.6) precise; urgency=low
+
+  * Added options on startup
+
+ -- Raul Rodrigo Segura <raurodse@gmail.com>  Wed, 13 Feb 2013 14:31:58 +0100
+
+n4d-samba (0.5) precise; urgency=low
+
+  * Added x-lliurex-group-acl to add member on cn 
+
+ -- Raul Rodrigo Segura <raurodse@gmail.com>  Thu, 07 Feb 2013 18:05:21 +0100
+
+n4d-samba (0.4) precise; urgency=low
+
+  * Check if SlapdManager plugins exist on update_index function
+  * First version working
+  * Added depends with python-llxvars
+
+ -- Raul Rodrigo Segura <raurodse@gmail.com>  Thu, 24 Jan 2013 21:41:10 +0100
+
+n4d-samba (0.3) precise; urgency=low
+
+  * Added depends with python-smbpasswd, n4d-ldap
+
+ -- Raul Rodrigo Segura <raurodse@gmail.com>  Fri, 11 Jan 2013 14:09:41 +0100
+
+n4d-samba (0.2) precise; urgency=low
+
+  * Install files.
+
+ -- Raul Rodrigo Segura <lliurex_devel3@edu.gva.es>  Thu, 12 Jul 2012 16:55:23 +0200
+
+n4d-samba (0.1) precise; urgency=low
+
+  * Initial Release.
+
+ -- Raul Rodrigo Segura <lliurex_devel3@edu.gva.es>  Thu, 12 Jul 2012 16:55:23 +0200

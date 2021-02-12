@@ -1,3 +1,9 @@
+n4d-samba (0.34) focal; urgency=medium
+
+  * More bytes stuff
+
+ -- Hector Garcia Huerta <hectorgh@gmail.com>  Fri, 12 Feb 2021 15:04:09 +0100
+
 n4d-samba (0.32) focal; urgency=medium
 
   * Various changes to support n4d > 0.900

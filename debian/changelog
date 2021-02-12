@@ -1,3 +1,10 @@
+n4d-samba (0.32) focal; urgency=medium
+
+  * Various changes to support n4d > 0.900
+  * bug fixes in python2-> python3 migration
+
+ -- Hector Garcia Huerta <hectorgh@gmail.com>  Fri, 12 Feb 2021 14:07:02 +0100
+
 n4d-samba (0.31) focal; urgency=medium
 
   * Added get_local_sid function

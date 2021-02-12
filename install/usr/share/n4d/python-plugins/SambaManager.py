@@ -4,8 +4,7 @@ import ldap.modlist
 import ast
 import datetime
 import subprocess
-#import smbpasswd
-import passlib
+import passlib.hash
 import grp
 import tempfile
 import shutil
@@ -136,11 +135,11 @@ class SambaManager:
 			if not self.connection_ldap():
 				#return {"status":False,"msg":"Connection with ldap is not created"}
 				return n4d.responses.build_failed_call_response(LDAP_ERROR)
-		
 		list_entry = self.connect_ldap.search_s(ou,ldap.SCOPE_SUBTREE)
+
 		if len(list_entry) > 0 :
 			name_entry,entry = list_entry[0]
-			if entry.has_key('x-lliurex-xid-counter'):
+			if "x-lliurex-xid-counter" in entry:
 				if len(entry['x-lliurex-xid-counter']) > 0 and int(entry['x-lliurex-xid-counter'][0]) < int(new_value):
 					aux_entry = entry.copy()
 					aux_entry['x-lliurex-xid-counter'] = [str(new_value)]
@@ -162,14 +161,17 @@ class SambaManager:
 
 	def load_schema(self):
 		template = self.tpl_env.get_template('schemas')
-		string_template = template.render().encode('utf-8')
+		string_template = template.render()
 		aux_dic = ast.literal_eval(string_template)
 		for entry_name in aux_dic.keys():
-			if not objects.has_key('SlapdManager'):
+			slapdp=self.core.get_plugin("SlapdManager")
+			if slapdp==None:
 				#return {'status':False,'msg':'This function depend on SlapdManager, but this is not installed or not working'}
 				return n4d.responses.build_failed_call_response(SLAPD_ERROR)
-			result = objects['SlapdManager'].load_schema(entry_name,aux_dic[entry_name],True)
-			if not result['status']:
+			
+			data=slapdp.str_to_bytes(aux_dic[entry_name])
+			result = slapdp.load_schema(entry_name,data,True)
+			if result['status']!=0:
 				return n4d.responses.build_failed_call_response(LOAD_SCHEMA_ERROR)
 				#return result
 		#return {'status':True,'msg':'Load schema to samba'}
@@ -178,13 +180,14 @@ class SambaManager:
 	
 	def load_index(self):
 		template = self.tpl_env.get_template('index')
-		string_template = template.render().encode('utf-8')
+		string_template = template.render()
 		aux_dic = ast.literal_eval(string_template)
-		if not objects.has_key('SlapdManager'):
-			return n4d.responses.build_failed_call_response(SLAPD_ERROR)
+		slapdp=self.core.get_plugin("SlapdManager")
+		if slapdp==None:
 			#return {'status':False,'msg':'This function depend on SlapdManager, but this is not installed or not working'}
-		result = objects['SlapdManager'].update_index(aux_dic)
-		if not result['status']:
+			return n4d.responses.build_failed_call_response(SLAPD_ERROR)
+		result = slapdp.update_index(aux_dic)
+		if result['status']!=0:
 			return n4d.responses.build_failed_call_response(LOAD_INDEX_ERROR)
 			#return result
 		return n4d.responses.build_successful_call_response()
@@ -193,15 +196,16 @@ class SambaManager:
 	
 	def load_basic_structure(self):
 		template = self.tpl_env.get_template('basic-structure')
-		if  objects.has_key("VariablesManager"):
-			environment_basic = objects["VariablesManager"].get_variable_list(['SAMBA_DOMAIN_NAME','LDAP_BASE_DN','SAMBASID'])
-		string_template = template.render(environment_basic).encode('utf-8')
+		environment_basic = self.core.get_variable_list(['SAMBA_DOMAIN_NAME','LDAP_BASE_DN','SAMBASID'])["return"]
+		string_template = template.render(environment_basic)
 		aux_dic = ast.literal_eval(string_template)
-		if not objects.has_key('SlapdManager'):
-			return n4d.responses.build_failed_call_response(SLAPD_ERROR)
+		slapdp=self.core.get_plugin("SlapdManager")
+		if slapdp==None:
 			#return {'status':False,'msg':'This function depend on SlapdManager, but this is not installed or not working'}
-		result = objects['SlapdManager'].insert_dictionary(aux_dic,i_existing=True)
-		if result['status']:
+			return n4d.responses.build_failed_call_response(SLAPD_ERROR)
+		data=slapdp.str_to_bytes(aux_dic)
+		result = slapdp.insert_dictionary(data,i_existing=True)
+		if result['status']==0:
 			return n4d.responses.build_successful_call_response()
 			#return {'status':True,'msg':'Load basic structure to work samba'}
 		else:
@@ -209,10 +213,9 @@ class SambaManager:
 			#return result
 	#def load_basic_structure
 	
-	def load_all_system_groups(self,min_gid=None,max_gid=1000):
+	def load_all_system_groups(self,min_gid=0,max_gid=1000):
 		template = self.tpl_env.get_template('system-group')
-		if  objects.has_key("VariablesManager"):
-			environment_vars = objects["VariablesManager"].get_variable_list(['LDAP_BASE_DN'])
+		environment_vars = self.core.get_variable_list(['LDAP_BASE_DN'])["return"]
 		max_counter = 0
 		for x in grp.getgrall():
 			environment_vars["GROUP_NAME"] = x.gr_name
@@ -221,17 +224,19 @@ class SambaManager:
 				continue
 			if int(x.gr_gid) > max_counter:
 				max_counter = x.gr_gid
-			string_template = template.render(environment_vars).encode('utf-8')
+			string_template = template.render(environment_vars)
 			aux_dic = ast.literal_eval(string_template)
-			if not objects.has_key('SlapdManager'):
-				return n4d.responses.build_failed_call_response(SLAPD_ERROR)
+			slapdp=self.core.get_plugin("SlapdManager")
+			if slapdp==None:
 				#return {'status':False,'msg':'This function depend on SlapdManager, but this is not installed or not working'}
-			result = objects['SlapdManager'].insert_dictionary(aux_dic,i_existing=True)
-			if not result['status']:
+				return n4d.responses.build_failed_call_response(SLAPD_ERROR)
+			aux_dic=slapdp.str_to_bytes(aux_dic)
+			result = slapdp.insert_dictionary(aux_dic,i_existing=True)
+			if result['status']!=0:
 				return n4d.responses.build_failed_call_response(LOAD_ALL_SYSTEM_GROUPS_ERROR)
 				#return result
 		result = self.update_xid_counter("ou=System,ou=Groups,"+environment_vars['LDAP_BASE_DN'],max_counter)
-		if result[0]:
+		if result["status"]==0:
 			return n4d.responses.build_successful_call_response()
 			#return {'status':True,'msg':'Load all groups from system'}
 		else:
@@ -241,8 +246,7 @@ class SambaManager:
 
 	def load_admin_system_user(self):
 		template = self.tpl_env.get_template('admin-users')
-		if  objects.has_key("VariablesManager"):
-			environment_vars = objects["VariablesManager"].get_variable_list(['LDAP_BASE_DN','SAMBASID'])
+		environment_vars = self.core.get_variable_list(['LDAP_BASE_DN','SAMBASID'])["return"]
 		users_adm = grp.getgrnam('adm').gr_mem
 		max_uid = 0
 		for x in users_adm:
@@ -254,13 +258,15 @@ class SambaManager:
 			environment_vars['USERHOME'] = user.pw_dir
 			environment_vars['USERPASSWORD'] = "{crypt}" + spwd.getspnam(user.pw_name).sp_pwd
 			environment_vars['SAMBASIDUSER'] = str(environment_vars['SAMBASID']) + "-" + str(environment_vars['USERNAME_UID'])
-			string_template = template.render(environment_vars).encode('utf-8')
+			string_template = template.render(environment_vars)
 			aux_dic = ast.literal_eval(string_template)
 			
-			if not objects.has_key('SlapdManager'):
-				return n4d.responses.build_failed_call_response(SLAPD_ERROR)
+			slapdp=self.core.get_plugin("SlapdManager")
+			if slapdp==None:
 				#return {'status':False,'msg':'This function depend on SlapdManager, but this is not installed or not working'}
-			result = objects['SlapdManager'].insert_dictionary(aux_dic,i_existing=True)
+				return n4d.responses.build_failed_call_response(SLAPD_ERROR)
+			aux_dic=slapdp.str_to_bytes(aux_dic)
+			result = slapd.insert_dictionary(aux_dic,i_existing=True)
 			if not result['status']:
 				return n4d.responses.build_failed_call_response(LOAD_ADMIN_SYSTEM_USER_ERROR)
 				#return result
@@ -280,54 +286,59 @@ class SambaManager:
 	
 	def load_net_admin_user(self,password=None):
 		template = self.tpl_env.get_template('net-admin-user')
-		if  objects.has_key("VariablesManager"):
-			if not objects.has_key('SlapdManager'):
-				return n4d.responses.build_failed_call_response(SLAPD_ERROR)
-				#return {'status':False,'msg':'This function depend on SlapdManager, but this is not installed or not working'}
-			environment_vars = objects["VariablesManager"].get_variable_list(['LDAP_BASE_DN','SAMBASID'])
-			environment_vars['USERPASSWORD'] = objects['SlapdManager'].generate_ssha_password(password).strip()
-			#Ported to hashlib
-			#environment_vars["NTPASSWORD"]=smbpasswd.nthash(password)
-			environment_vars["NTPASSWORD"]=passlib.hash.nthash.encrypt(password).upper()
-			#environment_vars["LMPASSWORD"]=smbpasswd.lmhash(password)
-			environment_vars["LMPASSWORD"]=passlib.hash.lmhash.encrypt(password).upper()
-			environment_vars["LASTSET"]=str(int(time.time()))
-			string_template = template.render(environment_vars).encode('utf-8')
-			aux_dic = ast.literal_eval(string_template)
-			result = objects['SlapdManager'].insert_dictionary(aux_dic,i_existing=True)
-			if not result['status']:
-				return n4d.responses.build_failed_call_response(LOAD_NET_ADMIN_USER_ERROR)
-				#return result
-			aux_dn = aux_dic.keys()[0]
-			result = self.insert_to_admin_profile(aux_dn,aux_dic[aux_dn]['uid'])
-			if not result['status']:
-				return n4d.responses.build_failed_call_response(INSERT_ADMIN_PROFILE_ERROR)
-				#return result
-			result = self.insert_to_admin_groups(aux_dic[aux_dn]['uid'])
-			if not result['status']:
-				return n4d.responses.build_failed_call_response(INSERT_ADMIN_GROUPS_ERROR)
-				#return result
-			result = self.update_xid_counter("ou=Admins,ou=People,"+environment_vars['LDAP_BASE_DN'],1042)
-			if result[0]:
-				#return {'status':True,'msg':'Load all admin users from system'}
-				return n4d.responses.build_successful_call_response()
-			else:
-				return n4d.responses.build_failed_call_response(UPDATE_XID_COUNTER_ERROR)
-				#return {'status':False,'msg':result[1]}
+		
+		slapdp=self.core.get_plugin("SlapdManager")
+		if slapdp==None:
+			#return {'status':False,'msg':'This function depend on SlapdManager, but this is not installed or not working'}
+			return n4d.responses.build_failed_call_response(SLAPD_ERROR)
+		environment_vars = self.core.get_variable_list(['LDAP_BASE_DN','SAMBASID'])["return"]
+		environment_vars['USERPASSWORD'] = slapdp.generate_ssha_password(password).strip()
+		#Ported to hashlib
+		#environment_vars["NTPASSWORD"]=smbpasswd.nthash(password)
+		environment_vars["NTPASSWORD"]=passlib.hash.nthash.encrypt(password).upper()
+		#environment_vars["LMPASSWORD"]=smbpasswd.lmhash(password)
+		environment_vars["LMPASSWORD"]=passlib.hash.lmhash.encrypt(password).upper()
+		environment_vars["LASTSET"]=str(int(time.time()))
+		string_template = template.render(environment_vars)
+		aux_dic = ast.literal_eval(string_template)
+		aux_dn = list(aux_dic.keys())[0]
+		user=aux_dic[aux_dn]['uid']
+		aux_dic=slapdp.str_to_bytes(aux_dic)
+		
+		result = slapdp.insert_dictionary(aux_dic,i_existing=True)
+		if result['status']!=0:
+			return n4d.responses.build_failed_call_response(LOAD_NET_ADMIN_USER_ERROR)
+			#return result
+		
+		
+		result = self.insert_to_admin_profile(aux_dn,user)
+		if result['status']!=0:
+			return n4d.responses.build_failed_call_response(INSERT_ADMIN_PROFILE_ERROR)
+			#return result
+		result = self.insert_to_admin_groups(user)
+		if result['status']!=0:
+			return n4d.responses.build_failed_call_response(INSERT_ADMIN_GROUPS_ERROR)
+			#return result
+		result = self.update_xid_counter("ou=Admins,ou=People,"+environment_vars['LDAP_BASE_DN'],1042)
+		if result["status"]==0:
+			#return {'status':True,'msg':'Load all admin users from system'}
+			return n4d.responses.build_successful_call_response()
 		else:
-			return n4d.responses.build_failed_call_response()
-			#return {'status':False,'msg':'Variables Manager n4d plugin not working'}
+			return n4d.responses.build_failed_call_response(UPDATE_XID_COUNTER_ERROR)
+			#return {'status':False,'msg':result[1]}
+	
 			
 	def load_ro_admin_user(self):
 		
 		template=self.tpl_env.get_template("ro-admin-user")
 		
-		environment_vars=objects["VariablesManager"].get_variable_list(["LDAP_BASE_DN"])
-		password="".join(random.sample(string.letters+string.digits, 4))
-		environment_vars["PASSWORD"]=objects['SlapdManager'].generate_ssha_password(password).strip()
-		string_template=template.render(environment_vars).encode("utf-8")
+		environment_vars=self.core.get_variable_list(["LDAP_BASE_DN"])["return"]
+		password="".join(random.sample(string.ascii_letters+string.digits, 4))
+		environment_vars["PASSWORD"]=self.core.get_plugin("SlapdManager").generate_ssha_password(password).strip()
+		string_template=template.render(environment_vars)
 		aux_dic=ast.literal_eval(string_template)
-		result=objects["SlapdManager"].insert_dictionary(aux_dic,i_existing=True)
+		aux_dic=self.core.get_plugin("SlapdManager").str_to_bytes(aux_dic)
+		result=self.core.get_plugin("SlapdManager").insert_dictionary(aux_dic,i_existing=True)
 		
 		return n4d.responses.build_successful_call_response()
 		#return result
@@ -337,20 +348,22 @@ class SambaManager:
 	
 	def load_education(self):
 		template = self.tpl_env.get_template('education')
-		if  objects.has_key("VariablesManager"):
-			environment_vars = objects["VariablesManager"].get_variable_list(['LDAP_BASE_DN','SAMBASID'])
-		string_template = template.render(environment_vars).encode('utf-8')
+		environment_vars = self.core.get_variable_list(['LDAP_BASE_DN','SAMBASID'])["return"]
+		string_template = template.render(environment_vars)
 		aux_dic = ast.literal_eval(string_template)
-		if not objects.has_key('SlapdManager'):
-			return n4d.responses.build_failed_call_response(SLAPD_ERROR)
+		slapdp=self.core.get_plugin("SlapdManager")
+		if slapdp==None:
 			#return {'status':False,'msg':'This function depend on SlapdManager, but this is not installed or not working'}
-		result = objects['SlapdManager'].insert_dictionary(aux_dic,i_existing=True)
-		if not result['status']:
+			return n4d.responses.build_failed_call_response(SLAPD_ERROR)
+		aux_dic=slapdp.str_to_bytes(aux_dic)
+		result = slapdp.insert_dictionary(aux_dic,i_existing=True)
+		if result['status']!=0:
 			return n4d.responses.build_failed_call_response(LOAD_EDUCATION_ERROR)
 			#return result
 		result = self.update_xid_counter("ou=Profiles,ou=Groups,"+environment_vars['LDAP_BASE_DN'],10005)
-		if result[0]:
-			objects['VariablesManager'].init_variable('ENABLE_NSS_LDAP',{'ENABLE_NSS_LDAP':'ENABLED'})
+		if result["status"]==0:
+			#objects['VariablesManager'].init_variable('ENABLE_NSS_LDAP',{'ENABLE_NSS_LDAP':'ENABLED'})
+			self.core.set_variable('ENABLE_NSS_LDAP',"ENABLED")
 			return n4d.responses.build_successful_call_response()
 			#return {'status':True,'msg':'Load structure for education model'}
 		else:
@@ -360,17 +373,18 @@ class SambaManager:
 	
 	def configure_smb(self):
 		template = self.tpl_env.get_template('smb.conf')
-		if  objects.has_key("VariablesManager"):
-			objects['VariablesManager'].init_variable('DEADTIME')
-			objects['VariablesManager'].init_variable('SAMBA_DOMAIN_NAME')
-			objects['VariablesManager'].init_variable('NAME_SERVER_SAMBA')
-			environment_vars = objects["VariablesManager"].get_variable_list(['SAMBA_DOMAIN_NAME','NAME_SERVER_SAMBA','DEADTIME','LDAP_BASE_DN'])
+		
+		self.core.set_variable("DEADTIME",15)
+		self.core.set_variable("SAMBA_DOMAIN_NAME","lliurex")
+		self.core.set_variable("NAME_SERVER_SAMBA","%h")
+		
+		environment_vars = self.core.get_variable_list(['SAMBA_DOMAIN_NAME','NAME_SERVER_SAMBA','DEADTIME','LDAP_BASE_DN'])["return"]
 		string_template = template.render(environment_vars).encode('utf-8')
 		tmp,filename=tempfile.mkstemp()
 		f = open(filename,'w')
-		f.writelines(string_template)
+		f.writelines(string_template.decode("utf-8"))
 		f.close()
-		n4d_mv(filename,'/etc/samba/smb.conf')
+		self.core.n4d_mv(filename,'/etc/samba/smb.conf')
 		return n4d.responses.build_successful_call_response()
 		#return {'status':True,'msg':'Configured samba'}
 	#def configure_smb
@@ -384,8 +398,8 @@ class SambaManager:
 			installed_link = False
 			if not os.path.exists(self.enable_acl_path + '400_subtree_students_samba'):
 				os.symlink(self.available_acl_path + 'subtree_students_samba',self.enable_acl_path + '400_subtree_students_samba')
-		result = objects['SlapdManager'].load_acl()
-		if not result['status']:
+		result = self.core.get_plugin("SlapdManager").load_acl()
+		if result['status']!=0:
 			return n4d.responses.build_failed_call_response(LOAD_ACL_SAMBA_EDUCATION_ERROR)
 			#return result
 		return n4d.responses.build_successful_call_response()
@@ -402,12 +416,13 @@ class SambaManager:
 		if not self.test_ldap_connection():
 			if not self.connection_ldap():
 				return {"status":False,"msg":"Connection with ldap is not created"}
-		if  objects.has_key("VariablesManager"):
-			environment_vars = objects["VariablesManager"].get_variable_list(['LDAP_BASE_DN'])
+		
+		environment_vars = self.core.get_variable_list(['LDAP_BASE_DN'])["return"]
 		path = "cn=admins,ou=Profiles,ou=Groups,"+  environment_vars['LDAP_BASE_DN']
 		mod_list=[]
 		mod=(ldap.MOD_ADD,"memberUid",str(uid))
 		mod_list.append(mod)
+		mod_list=self.core.get_plugin("SlapdManager").str_to_bytes(mod_list)
 		for x in mod_list:
 			try:
 				self.connect_ldap.modify_s(path,[x])
@@ -425,11 +440,11 @@ class SambaManager:
 			if not self.connection_ldap():
 				return n4d.responses.build_failed_call_response(LDAP_ERROR)
 				#return {"status":False,"msg":"Connection with ldap is not created"}
-		if  objects.has_key("VariablesManager"):
-			environment_vars = objects["VariablesManager"].get_variable_list(['LDAP_BASE_DN'])
+		environment_vars = self.core.get_variable_list(['LDAP_BASE_DN'])["return"]
 		system_admin_groups = ['sudo','adm','plugdev','lpadmin','cdrom','dip','epoptes']
 		for group in system_admin_groups:
 			mod=(ldap.MOD_ADD,"memberUid",str(uid))
+			mod=self.core.get_plugin("SlapdManager").str_to_bytes(mod)
 			group_path="cn=" + group +",ou=System,ou=Groups," + environment_vars['LDAP_BASE_DN']
 			try:
 				self.connect_ldap.modify_s(group_path,[mod])
@@ -479,7 +494,7 @@ class SambaManager:
 			else:
 				self.connect_ldap = None
 				return False
-			environment_vars = objects["VariablesManager"].get_variable_list(['LDAP_BASE_DN'])
+			environment_vars = self.core.get_variable_list(['LDAP_BASE_DN'])["return"]
 			self.connect_ldap.bind_s("cn=admin,"+environment_vars['LDAP_BASE_DN'],password)
 			return True
 		except Exception as e:

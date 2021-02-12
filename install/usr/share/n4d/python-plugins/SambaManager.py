@@ -143,6 +143,7 @@ class SambaManager:
 				if len(entry['x-lliurex-xid-counter']) > 0 and int(entry['x-lliurex-xid-counter'][0]) < int(new_value):
 					aux_entry = entry.copy()
 					aux_entry['x-lliurex-xid-counter'] = [str(new_value)]
+					aux_entry=self.core.get_plugin("SlapdManager").str_to_binary(aux_entry)
 					mod_entry = ldap.modlist.modifyModlist(entry,aux_entry)
 					try:
 						self.connect_ldap.modify_s(name_entry,mod_entry)

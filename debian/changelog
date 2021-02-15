@@ -1,3 +1,9 @@
+n4d-samba (0.35) focal; urgency=medium
+
+  * Added some responses info to returns
+
+ -- Hector Garcia Huerta <hectorgh@gmail.com>  Mon, 15 Feb 2021 11:03:30 +0100
+
 n4d-samba (0.34) focal; urgency=medium
 
   * More bytes stuff

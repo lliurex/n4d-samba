@@ -38,7 +38,7 @@ class SambaSIDFixer:
 			self.connect_ldap.bind_s("cn=admin,"+self.basedn,password)
 			return True
 		except Exception as e:
-			print "\n\nError" + str(e) + "\n\n"
+			print("\n\nError" + str(e) + "\n\n")
 			self.connect_ldap = None
 			return False
 
@@ -55,7 +55,7 @@ class SambaSIDFixer:
 				try:
 					self.connect_ldap.modify_s(dn,updateSID)
 				except Exception as e:
-					print " *** Error : " , e
+					print(" *** Error : %s"%e)
 					pass
 			if values.has_key('sambaPrimaryGroupSID'):
 				if values['sambaPrimaryGroupSID'][0].find(actualDomainSID) != 0:
@@ -64,7 +64,7 @@ class SambaSIDFixer:
 					try:
 						self.connect_ldap.modify_s(dn,updateSID)
 					except Exception as e:
-						print " *** Error : " , e
+						print(" *** Error : %s"%e)
 						pass
 	
 	def getEntriesWithSambaSid(self):
@@ -100,7 +100,7 @@ class SambaSIDFixer:
 		if self.isNeedFixIt():
 			actualDomainSID = self.getActualSambaSID()
 			self.updateEntries(actualDomainSID)
-			print "[SambaSIDFixer] : Fixed SambaSid "
+			print("[SambaSIDFixer] : Fixed SambaSid ")
 			return [True,"SambaSID inconsistente. Se han unificado todos los sambaSID del dominio"]
 		return [False,"SambaSID are ok"]
 

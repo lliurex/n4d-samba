@@ -1,3 +1,9 @@
+n4d-samba (0.36) focal; urgency=medium
+
+  * Ported sambasidfixer to python3. *not tested*
+
+ -- Hector Garcia Huerta <hectorgh@gmail.com>  Fri, 09 Apr 2021 10:35:24 +0200
+
 n4d-samba (0.35.1) focal; urgency=medium
 
   * fixed key arg

@@ -19,6 +19,8 @@ import string
 
 import n4d.responses
 import n4d.server.core
+from n4d.utils import get_backup_name
+
 
 from jinja2 import Environment
 from jinja2.loaders import FileSystemLoader

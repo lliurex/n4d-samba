@@ -1,3 +1,9 @@
+n4d-samba (0.38) focal; urgency=medium
+
+  * Fixed n4d_mv call
+
+ -- Hector Garcia Huerta <hectorgh@gmail.com>  Tue, 29 Jun 2021 11:04:41 +0200
+
 n4d-samba (0.37) focal; urgency=medium
 
   * get_backup_name import

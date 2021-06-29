@@ -19,7 +19,7 @@ import string
 
 import n4d.responses
 import n4d.server.core
-from n4d.utils import get_backup_name
+from n4d.utils import get_backup_name,n4d_mv
 
 
 from jinja2 import Environment
@@ -385,7 +385,7 @@ class SambaManager:
 		f = open(filename,'w')
 		f.writelines(string_template.decode("utf-8"))
 		f.close()
-		self.core.n4d_mv(filename,'/etc/samba/smb.conf')
+		n4d_mv(filename,'/etc/samba/smb.conf')
 		return n4d.responses.build_successful_call_response(ret_msg="smb.conf configured")
 		#return {'status':True,'msg':'Configured samba'}
 	#def configure_smb

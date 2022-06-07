@@ -1,3 +1,9 @@
+n4d-samba (0.39) focal; urgency=medium
+
+  * some returns in  sambafixer didn't have new n4d format
+
+ -- Hector Garcia Huerta <hectorgh@gmail.com>  Tue, 07 Jun 2022 17:14:00 +0200
+
 n4d-samba (0.38) focal; urgency=medium
 
   * Fixed n4d_mv call

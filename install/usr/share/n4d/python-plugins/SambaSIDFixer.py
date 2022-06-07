@@ -3,6 +3,9 @@ import ldap.sasl
 import subprocess
 import re
 import os
+import n4d.responses
+import n4d.server.core
+from n4d.utils import get_backup_name,n4d_mv
 
 class SambaSIDFixer:
 
@@ -71,7 +74,8 @@ class SambaSIDFixer:
 		listEntries = []
 		allEntries = self.connect_ldap.search_s(self.basedn,ldap.SCOPE_SUBTREE,attrlist=['sambaSID','objectClass','sambaPrimaryGroupSID'])
 		for x in allEntries:
-			if(x[1].has_key('sambaSID')):
+			#if(x[1].has_key('sambasid')):
+			if('sambasid'in x[1].keys()):
 				listEntries.append(x)
 		return listEntries
 
@@ -101,8 +105,10 @@ class SambaSIDFixer:
 			actualDomainSID = self.getActualSambaSID()
 			self.updateEntries(actualDomainSID)
 			print("[SambaSIDFixer] : Fixed SambaSid ")
-			return [True,"SambaSID inconsistente. Se han unificado todos los sambaSID del dominio"]
-		return [False,"SambaSID are ok"]
+			#return [True,"SambaSID inconsistente. Se han unificado todos los sambaSID del dominio"]
+			return n4d.responses.build_successful_call_response("SambaSID inconsistente. Se han unificado todos los sambaSID del dominio")
+		#return [False,"SambaSID are ok"]
+		return n4d.responses.build_failed_call_response("SambaSID are ok")
 
 	def n4d_cron(self,minutes):
 		remainder = minutes % 480

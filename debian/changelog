@@ -1,3 +1,9 @@
+n4d-samba (0.40) focal; urgency=medium
+
+  * Added missing return status variables
+
+ -- Hector Garcia Huerta <hectorgh@gmail.com>  Wed, 22 Jun 2022 14:46:23 +0200
+
 n4d-samba (0.39) focal; urgency=medium
 
   * some returns in  sambafixer didn't have new n4d format

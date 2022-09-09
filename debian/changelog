@@ -1,3 +1,9 @@
+n4d-samba (0.40.1) focal; urgency=medium
+
+  * Fix compare sid (decode bytes) 
+
+ -- Juanma1980 <juanma1980@gmail.com>  Fri, 09 Sep 2022 11:17:09 +0200
+
 n4d-samba (0.40) focal; urgency=medium
 
   * Added missing return status variables

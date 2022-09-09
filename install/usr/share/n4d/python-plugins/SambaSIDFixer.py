@@ -16,7 +16,7 @@ class SambaSIDFixer:
 
 	def getActualSambaSID(self):
 		result = subprocess.Popen('LANG=C LANGUAGE=en net getlocalsid',stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True).communicate()[0]
-		sid = re.search('SID for domain \w+ is: (.*)',result)
+		sid = re.search('SID for domain \w+ is: (.*)',result.decode())
 		if sid != None:
 			sid = sid.group(1)
 		return sid
@@ -91,8 +91,8 @@ class SambaSIDFixer:
 					if not 'sambaDomain' in values['objectClass']:
 						dn = "-".join(dnsplited[:-1])
 				listSambaSID[dn] = 1
-			except:
-				pass
+			except Exception as e:
+				print("IsNeedFixIt Error: {}".format(e))
 
 		if  len(listSambaSID.keys()) > 1:
 			return True
@@ -108,7 +108,7 @@ class SambaSIDFixer:
 			#return [True,"SambaSID inconsistente. Se han unificado todos los sambaSID del dominio"]
 			return n4d.responses.build_successful_call_response("SambaSID inconsistente. Se han unificado todos los sambaSID del dominio")
 		#return [False,"SambaSID are ok"]
-		return n4d.responses.build_failed_call_response("SambaSID are ok")
+		return n4d.responses.build_failed_call_response(-1,"SambaSID are ok")
 
 	def n4d_cron(self,minutes):
 		remainder = minutes % 480
